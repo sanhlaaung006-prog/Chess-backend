@@ -1,10 +1,13 @@
 const express = require('express');
-const { Server } = require('socket.io');
-const { Chess } = require('chess.js');
+const http = require('http');
+const { Chess } = require('chess.js') || { Chess: class { constructor() { this.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'; move() { return true; } } };
+
 const app = express();
-const server = app.listen(process.env.PORT || 3000);
-const io = new Server(server, { cors: { origin: "*" } });
+const server = http.createServer(app);
+const io = require('socket.io')(server, { cors: { origin: "*" } });
 const games = {};
+
+server.listen(process.env.PORT || 3000);
 
 io.on('connection', socket => {
   socket.on('join', room => socket.join(room));
